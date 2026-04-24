@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: note-service
+
+server:
+  port: 8084

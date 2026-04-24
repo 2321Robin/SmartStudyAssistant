@@ -1,0 +1,13 @@
+web-client/node_modules/
+web-client/dist/
+.smartstudyassistant/
+backend/*/.smartstudyassistant/
+
+# Course reports, exported documents, and report screenshots are kept local.
+docs/superpowers/
+report-images/
+*.doc
+*.docx
+*.pdf
+7.大作业要求.md
+《面向服务的计算系统》大作业*.md

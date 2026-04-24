@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-route
+          uri: ${smartstudy.services.user-service-uri}
+          predicates:
+            - Path=/api/users/**
+        - id: user-auth-route
+          uri: ${smartstudy.services.user-service-uri}
+          predicates:
+            - Path=/api/auth/**
+        - id: plan-service-route
+          uri: ${smartstudy.services.plan-service-uri}
+          predicates:
+            - Path=/api/plans/**
+        - id: resource-service-route
+          uri: ${smartstudy.services.resource-service-uri}
+          predicates:
+            - Path=/api/resources/**
+        - id: note-service-route
+          uri: ${smartstudy.services.note-service-uri}
+          predicates:
+            - Path=/api/notes/**
+      discovery:
+        locator:
+          enabled: false
+
+smartstudy:
+  services:
+    user-service-uri: ${USER_SERVICE_URI:http://user-service}
+    plan-service-uri: ${PLAN_SERVICE_URI:http://plan-service}
+    resource-service-uri: ${RESOURCE_SERVICE_URI:http://resource-service}
+    note-service-uri: ${NOTE_SERVICE_URI:http://note-service}
+
+server:
+  port: 8080

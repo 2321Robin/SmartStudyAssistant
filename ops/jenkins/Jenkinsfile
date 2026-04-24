@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+    }
+
+    stages {
+        stage('Backend Test') {
+            steps {
+                dir('backend') {
+                    script {
+                        runCmd('mvn -B test')
+                    }
+                }
+            }
+        }
+
+        stage('Frontend Test') {
+            steps {
+                dir('web-client') {
+                    script {
+                        runCmd('npm ci')
+                        runCmd('npm test')
+                    }
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                dir('backend') {
+                    script {
+                        runCmd('mvn -B -DskipTests package')
+                    }
+                }
+                dir('web-client') {
+                    script {
+                        runCmd('npm ci')
+                        runCmd('npm run build')
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'backend/**/target/*.jar,web-client/dist/**', allowEmptyArchive: true
+        }
+    }
+}
+
+def runCmd(String command) {
+    if (isUnix()) {
+        sh command
+    } else {
+        bat command
+    }
+}

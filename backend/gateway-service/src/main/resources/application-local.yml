@@ -1,0 +1,9 @@
+server:
+  port: 8088
+
+smartstudy:
+  services:
+    user-service-uri: http://localhost:8081
+    plan-service-uri: http://localhost:8082
+    resource-service-uri: http://localhost:8083
+    note-service-uri: http://localhost:8084

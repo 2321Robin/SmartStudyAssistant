@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: plan-service
+
+server:
+  port: 8082
+
+deepseek:
+  base-url: https://api.deepseek.com
+  model: deepseek-chat
