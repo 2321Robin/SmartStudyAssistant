@@ -1,0 +1,97 @@
+services:
+  gateway-service:
+    image: maven:3.9.9-eclipse-temurin-17
+    working_dir: /workspace/backend
+    command: mvn -pl gateway-service -am spring-boot:run
+    environment:
+      SMARTSTUDY_JWT_SECRET: ${SMARTSTUDY_JWT_SECRET:-smartstudy-local-demo-secret}
+      USER_SERVICE_URI: http://user-service:8081
+      PLAN_SERVICE_URI: http://plan-service:8082
+      RESOURCE_SERVICE_URI: http://resource-service:8083
+      NOTE_SERVICE_URI: http://note-service:8084
+      MAVEN_OPTS: -Xmx192m
+    volumes:
+      - ../backend:/workspace/backend
+      - maven-repo:/root/.m2
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - plan-service
+      - resource-service
+      - note-service
+
+  user-service:
+    image: maven:3.9.9-eclipse-temurin-17
+    working_dir: /workspace/backend
+    command: mvn -pl user-service -am spring-boot:run -Dspring-boot.run.profiles=local -Dspring-boot.run.jvmArguments="-Dserver.port=8081 -Xmx192m"
+    environment:
+      SMARTSTUDY_JWT_SECRET: ${SMARTSTUDY_JWT_SECRET:-smartstudy-local-demo-secret}
+      MAVEN_OPTS: -Xmx192m
+    volumes:
+      - ../backend:/workspace/backend
+      - maven-repo:/root/.m2
+      - user-local-data:/root/.smartstudyassistant
+    ports:
+      - "127.0.0.1:8081:8081"
+
+  plan-service:
+    image: maven:3.9.9-eclipse-temurin-17
+    working_dir: /workspace/backend
+    command: mvn -pl plan-service -am spring-boot:run -Dspring-boot.run.jvmArguments="-Dserver.port=8082 -Xmx192m"
+    environment:
+      MAVEN_OPTS: -Xmx192m
+      SMARTSTUDY_STORAGE_PLAN_FILE: /data/plans.json
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    volumes:
+      - ../backend:/workspace/backend
+      - maven-repo:/root/.m2
+      - plan-data:/data
+    ports:
+      - "127.0.0.1:8082:8082"
+
+  resource-service:
+    image: maven:3.9.9-eclipse-temurin-17
+    working_dir: /workspace/backend
+    command: mvn -pl resource-service -am spring-boot:run -Dspring-boot.run.jvmArguments="-Dserver.port=8083 -Xmx160m"
+    environment:
+      MAVEN_OPTS: -Xmx160m
+    volumes:
+      - ../backend:/workspace/backend
+      - maven-repo:/root/.m2
+    ports:
+      - "127.0.0.1:8083:8083"
+
+  note-service:
+    image: maven:3.9.9-eclipse-temurin-17
+    working_dir: /workspace/backend
+    command: mvn -pl note-service -am spring-boot:run -Dspring-boot.run.jvmArguments="-Dserver.port=8084 -Xmx160m"
+    environment:
+      MAVEN_OPTS: -Xmx160m
+      SMARTSTUDY_STORAGE_NOTE_FILE: /data/notes.json
+    volumes:
+      - ../backend:/workspace/backend
+      - maven-repo:/root/.m2
+      - note-data:/data
+    ports:
+      - "127.0.0.1:8084:8084"
+
+  web-client:
+    image: node:20-alpine
+    working_dir: /workspace/web-client
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 4173"
+    environment:
+      VITE_PROXY_TARGET: http://gateway-service:8080
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ../web-client:/workspace/web-client
+    ports:
+      - "4173:4173"
+    depends_on:
+      - gateway-service
+
+volumes:
+  maven-repo:
+  user-local-data:
+  plan-data:
+  note-data:

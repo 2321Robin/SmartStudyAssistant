@@ -65,7 +65,39 @@ $env:DEEPSEEK_API_KEY='your-key'
 
 如果没有设置该变量，系统会自动使用本地模板生成学习计划。
 
-## Docker Compose 部署
+## Docker Compose 轻量部署（低配服务器推荐）
+
+轻量部署不启动 Nacos、Redis、MySQL，`user-service` 使用 H2，`plan-service` 和 `note-service` 使用 Docker volume 保存 JSON 数据，适合 2GB 左右内存的课程演示服务器。
+
+验证 Compose 配置：
+
+```bash
+docker-compose -f ops/docker-compose-light.yml config
+```
+
+启动服务：
+
+```bash
+export SMARTSTUDY_JWT_SECRET='change-this-to-a-long-random-secret'
+docker-compose -f ops/docker-compose-light.yml up -d
+```
+
+轻量 Compose 模式下访问：
+
+- 前端：`http://服务器IP:4173`
+- 网关：`http://服务器IP:8080`
+
+前端容器会通过 `VITE_PROXY_TARGET=http://gateway-service:8080` 将 `/api` 请求转发到网关。主机直跑前端时默认转发到 `http://localhost:8088`。
+
+停止服务：
+
+```bash
+docker-compose -f ops/docker-compose-light.yml down
+```
+
+## Docker Compose 完整部署
+
+完整部署会额外启动 Nacos、Redis、MySQL，建议服务器内存不少于 4GB。
 
 验证 Compose 配置：
 
@@ -79,12 +111,10 @@ docker compose -f ops/docker-compose.yml config
 docker compose -f ops/docker-compose.yml up -d
 ```
 
-Compose 模式下访问：
+完整 Compose 模式下访问：
 
 - 前端：`http://localhost:4173`
 - 网关：`http://localhost:8080`
-
-前端容器会通过 `VITE_PROXY_TARGET=http://gateway-service:8080` 将 `/api` 请求转发到网关。主机直跑前端时默认转发到 `http://localhost:8088`。
 
 停止服务：
 
