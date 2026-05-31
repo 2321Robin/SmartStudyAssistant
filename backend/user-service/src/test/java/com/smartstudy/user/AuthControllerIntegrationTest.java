@@ -1,6 +1,7 @@
 package com.smartstudy.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smartstudy.common.security.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,7 +36,7 @@ class AuthControllerIntegrationTest {
 
     @Test
     void registerReturnsTokenForNewUser() throws Exception {
-        given(authService.register(any())).willReturn(new com.smartstudy.user.dto.AuthResponse("placeholder-token:YWxpY2U", "alice"));
+        given(authService.register(any())).willReturn(new com.smartstudy.user.dto.AuthResponse(JwtUtils.generateToken("alice"), "alice"));
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,7 +62,7 @@ class AuthControllerIntegrationTest {
     @Test
     void loginReturnsTokenForValidCredentials() throws Exception {
         String body = objectMapper.writeValueAsString(new AuthRequest("carol", "password123"));
-        given(authService.login(any())).willReturn(new com.smartstudy.user.dto.AuthResponse("placeholder-token:Y2Fyb2w", "carol"));
+        given(authService.login(any())).willReturn(new com.smartstudy.user.dto.AuthResponse(JwtUtils.generateToken("carol"), "carol"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

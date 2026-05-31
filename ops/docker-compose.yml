@@ -4,7 +4,7 @@ services:
     environment:
       MODE: standalone
     ports:
-      - "8848:8848"
+      - "127.0.0.1:8848:8848"
 
   mysql:
     image: mysql:8.4
@@ -23,13 +23,14 @@ services:
   redis:
     image: redis:7.4-alpine
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
 
   gateway-service:
     image: maven:3.9.9-eclipse-temurin-17
     working_dir: /workspace/backend
     command: mvn -pl gateway-service -am spring-boot:run
     environment:
+      SMARTSTUDY_JWT_SECRET: ${SMARTSTUDY_JWT_SECRET:-smartstudy-local-demo-secret}
       USER_SERVICE_URI: http://user-service:8081
       PLAN_SERVICE_URI: http://plan-service:8082
       RESOURCE_SERVICE_URI: http://resource-service:8083
@@ -51,6 +52,7 @@ services:
     working_dir: /workspace/backend
     command: mvn -pl user-service -am spring-boot:run -Dspring-boot.run.jvmArguments=-Dserver.port=8081
     environment:
+      SMARTSTUDY_JWT_SECRET: ${SMARTSTUDY_JWT_SECRET:-smartstudy-local-demo-secret}
       SMARTSTUDY_USER_DB_URL: jdbc:mysql://mysql:3306/smartstudy_user?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SMARTSTUDY_USER_DB_USERNAME: root
       SMARTSTUDY_USER_DB_PASSWORD: root
@@ -58,7 +60,7 @@ services:
       - ../backend:/workspace/backend
       - maven-repo:/root/.m2
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     depends_on:
       mysql:
         condition: service_healthy
@@ -71,7 +73,7 @@ services:
       - ../backend:/workspace/backend
       - maven-repo:/root/.m2
     ports:
-      - "8082:8082"
+      - "127.0.0.1:8082:8082"
     depends_on:
       - nacos
       - redis
@@ -84,7 +86,7 @@ services:
       - ../backend:/workspace/backend
       - maven-repo:/root/.m2
     ports:
-      - "8083:8083"
+      - "127.0.0.1:8083:8083"
     depends_on:
       - nacos
       - redis
@@ -97,7 +99,7 @@ services:
       - ../backend:/workspace/backend
       - maven-repo:/root/.m2
     ports:
-      - "8084:8084"
+      - "127.0.0.1:8084:8084"
     depends_on:
       - nacos
       - redis
@@ -107,6 +109,7 @@ services:
     working_dir: /workspace/web-client
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 4173"
     environment:
+      VITE_PROXY_TARGET: http://gateway-service:8080
       CHOKIDAR_USEPOLLING: "true"
     volumes:
       - ../web-client:/workspace/web-client

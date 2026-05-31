@@ -17,8 +17,9 @@
 
 - 后端：Spring Boot、Spring Cloud Gateway、Maven
 - 前端：Vue 3、Vue Router、Vite
-- 数据：MySQL、H2、本地 JSON 文件
+- 数据：MySQL（用户服务生产配置）、H2（本地演示）、本地 JSON 文件（计划与笔记演示持久化）
 - 工程化：Docker Compose、Jenkins、Git
+- 基础设施：Nacos、Redis（Docker Compose 中作为扩展组件预留）
 - 智能能力：DeepSeek API（可选）
 
 ## 项目结构
@@ -77,6 +78,13 @@ docker compose -f ops/docker-compose.yml config
 ```bash
 docker compose -f ops/docker-compose.yml up -d
 ```
+
+Compose 模式下访问：
+
+- 前端：`http://localhost:4173`
+- 网关：`http://localhost:8080`
+
+前端容器会通过 `VITE_PROXY_TARGET=http://gateway-service:8080` 将 `/api` 请求转发到网关。主机直跑前端时默认转发到 `http://localhost:8088`。
 
 停止服务：
 

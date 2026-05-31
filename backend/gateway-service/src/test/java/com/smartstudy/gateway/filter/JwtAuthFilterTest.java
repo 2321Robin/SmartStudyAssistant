@@ -1,5 +1,7 @@
 package com.smartstudy.gateway.filter;
 
+import com.smartstudy.common.security.JwtUtils;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
@@ -47,7 +49,7 @@ class JwtAuthFilterTest {
     void allowsProtectedRequestWithBearerToken() {
         AtomicBoolean chainInvoked = new AtomicBoolean(false);
         ServerWebExchange exchange = exchange(MockServerHttpRequest.get("/api/notes")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer placeholder-token:c3R1ZGVudA")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + JwtUtils.generateToken("student"))
                 .build());
 
         StepVerifier.create(filter.filter(exchange, markInvoked(chainInvoked)))
@@ -61,7 +63,7 @@ class JwtAuthFilterTest {
     void rejectsProtectedRequestWithInvalidBearerToken() {
         AtomicBoolean chainInvoked = new AtomicBoolean(false);
         ServerWebExchange exchange = exchange(MockServerHttpRequest.get("/api/notes")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer not-a-placeholder-token")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer not-a-valid-token")
                 .build());
 
         StepVerifier.create(filter.filter(exchange, markInvoked(chainInvoked)))

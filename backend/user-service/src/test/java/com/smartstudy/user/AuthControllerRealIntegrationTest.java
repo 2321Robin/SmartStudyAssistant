@@ -48,7 +48,7 @@ class AuthControllerRealIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.username").value("alice"))
-                .andExpect(jsonPath("$.data.token").value("placeholder-token:YWxpY2U"));
+                .andExpect(jsonPath("$.data.token").isString());
 
         Optional<UserAccount> storedUser = userAccountRepository.findByUsername("alice");
         assertThat(storedUser).isPresent();
@@ -62,7 +62,7 @@ class AuthControllerRealIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.username").value("alice"))
-                .andExpect(jsonPath("$.data.token").value("placeholder-token:YWxpY2U"));
+                .andExpect(jsonPath("$.data.token").isString());
     }
 
     @Test
