@@ -2,7 +2,7 @@ services:
   gateway-service:
     image: maven:3.9.9-eclipse-temurin-17
     working_dir: /workspace/backend
-    command: sh -c "mvn -pl common install -DskipTests && mvn -f gateway-service/pom.xml spring-boot:run"
+    command: sh -c "mvn install -N -DskipTests && mvn -pl common install -DskipTests && mvn -f gateway-service/pom.xml spring-boot:run"
     environment:
       SMARTSTUDY_JWT_SECRET: ${SMARTSTUDY_JWT_SECRET:-smartstudy-local-demo-secret}
       USER_SERVICE_URI: http://user-service:8081
@@ -24,7 +24,7 @@ services:
   user-service:
     image: maven:3.9.9-eclipse-temurin-17
     working_dir: /workspace/backend
-    command: sh -c "mvn -pl common install -DskipTests && mvn -f user-service/pom.xml spring-boot:run -Dspring-boot.run.profiles=local -Dspring-boot.run.jvmArguments='-Dserver.port=8081 -Xmx192m'"
+    command: sh -c "mvn install -N -DskipTests && mvn -pl common install -DskipTests && mvn -f user-service/pom.xml spring-boot:run -Dspring-boot.run.profiles=local -Dspring-boot.run.jvmArguments='-Dserver.port=8081 -Xmx192m'"
     environment:
       SMARTSTUDY_JWT_SECRET: ${SMARTSTUDY_JWT_SECRET:-smartstudy-local-demo-secret}
       MAVEN_OPTS: -Xmx192m
@@ -38,7 +38,7 @@ services:
   plan-service:
     image: maven:3.9.9-eclipse-temurin-17
     working_dir: /workspace/backend
-    command: sh -c "mvn -pl common install -DskipTests && mvn -f plan-service/pom.xml spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=8082 -Xmx192m'"
+    command: sh -c "mvn install -N -DskipTests && mvn -pl common install -DskipTests && mvn -f plan-service/pom.xml spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=8082 -Xmx192m'"
     environment:
       MAVEN_OPTS: -Xmx192m
       SMARTSTUDY_STORAGE_PLAN_FILE: /data/plans.json
@@ -53,7 +53,7 @@ services:
   resource-service:
     image: maven:3.9.9-eclipse-temurin-17
     working_dir: /workspace/backend
-    command: sh -c "mvn -pl common install -DskipTests && mvn -f resource-service/pom.xml spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=8083 -Xmx160m'"
+    command: sh -c "mvn install -N -DskipTests && mvn -pl common install -DskipTests && mvn -f resource-service/pom.xml spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=8083 -Xmx160m'"
     environment:
       MAVEN_OPTS: -Xmx160m
     volumes:
@@ -65,7 +65,7 @@ services:
   note-service:
     image: maven:3.9.9-eclipse-temurin-17
     working_dir: /workspace/backend
-    command: sh -c "mvn -pl common install -DskipTests && mvn -f note-service/pom.xml spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=8084 -Xmx160m'"
+    command: sh -c "mvn install -N -DskipTests && mvn -pl common install -DskipTests && mvn -f note-service/pom.xml spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=8084 -Xmx160m'"
     environment:
       MAVEN_OPTS: -Xmx160m
       SMARTSTUDY_STORAGE_NOTE_FILE: /data/notes.json
